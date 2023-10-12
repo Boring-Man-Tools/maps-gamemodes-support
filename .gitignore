@@ -1,0 +1,5 @@
+node_modules/
+generated_ids.js
+generated_nb_maps.txt
+generated_results/
+generated_maps_debug/
