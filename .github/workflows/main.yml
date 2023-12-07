@@ -1,0 +1,40 @@
+name: Generate gamemode stats for all the boring maps on the Steam workshop
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get current date
+        id: current_date
+        run: echo "CURRENT_DATE=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Make script executable
+        run: chmod +x run.sh
+
+      - name: Run the script
+        run: ./run.sh
+
+      - name: Commit and push to gh-pages
+        run: |
+          git config user.name "gh-action[bot]"
+          git config user.email "gh-action[bot]@users.noreply.github.com"
+          git checkout -b gh-pages
+          git add html/index.html
+          git commit -m "ci: update gamemode stats (${{ steps.current_date.outputs.CURRENT_DATE }})"
+          git push origin gh-pages --force
+          git checkout main
