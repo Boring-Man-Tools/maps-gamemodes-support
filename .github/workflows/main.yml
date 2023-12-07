@@ -34,7 +34,8 @@ jobs:
           git config user.name "gh-action[bot]"
           git config user.email "gh-action[bot]@users.noreply.github.com"
           git checkout -b gh-pages
-          git add html/index.html
+          mv html/* .
+          git add .
           git commit -m "ci: update gamemode stats (${{ steps.current_date.outputs.CURRENT_DATE }})"
           git push origin gh-pages --force
           git checkout main
