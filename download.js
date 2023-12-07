@@ -13,6 +13,12 @@ const commands = MAP_IDS.slice(
   NEXT_BUCKET_INDEX + NEXT_BUCKET_SIZE
 ).map((id) => `download_item 346120 ${id}`);
 
-for await (const progress of steamCmd.run(commands)) {
-  console.log(progress);
+console.log(commands);
+
+try {
+  for await (const _progress of steamCmd.run(commands)) {
+    continue;
+  }
+} catch (error) {
+  console.log("--- ERROR ---", error);
 }
