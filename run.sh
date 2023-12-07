@@ -23,7 +23,7 @@ fi
 echo "2. Looping through all map ids..."
 
 # keep an index that is incremented 10 by 10
-BUCKET_SIZE=1
+BUCKET_SIZE=10
 # retrieve the number of map ids from generated.js file
 MAP_IDS_LENGTH=$(cat generated_nb_maps.txt)
 
