@@ -1,8 +1,7 @@
-name: Generate gamemode stats for all the boring maps on the Steam workshop
+name: Generate gamemode stats for all the boring maps on the Steam workshop each 12 of the month
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: "0 0 12 * *"
 jobs:
   build:
     runs-on: ubuntu-latest
