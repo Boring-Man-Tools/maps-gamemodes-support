@@ -3,21 +3,21 @@
 # base url of the page
 _BASE_URL="https://steamcommunity.com/workshop/browse/?appid=346120&browsesort=mostrecent&requiredtags[]=Map"
 
-# grep the max page
-max_page=$(curl --silent "$_BASE_URL" | grep -oE '&nbsp;...&nbsp;.*</a>&nbsp;' | grep -oE ">[0-9]+</a>" | grep -oE "[0-9]+")
+# grep the total number of maps, e.g. "925 entries matching filters" (may contain a thousands separator)
+max_number_of_elements=$(curl --silent "$_BASE_URL" | grep -oE '[0-9,]+ entries matching filters' | head -n 1 | grep -oE '^[0-9,]+' | tr -d ',')
 
-# max & min number of elements, there are up to 30 elements per page
-max_number_of_elements=$((max_page * 30))
-min_number_of_elements=$((max_number_of_elements - 29))
+# there are up to 30 elements per page
+max_page=$(((max_number_of_elements + 29) / 30))
 
-echo "max page: $max_page."
-echo "There are between $min_number_of_elements and $max_number_of_elements maps."
+echo "max page: $max_page"
+echo "Number of maps: $max_number_of_elements"
 
 resulting_element_ids=()
 
 append_element_ids_for_page() {
     page=$1
-    element_ids_grep_output=$(curl --silent "${_BASE_URL}&p=${page}"  | grep -oE 'data-publishedfileid="[0-9]+"' | grep -oE "[0-9]+")
+    # each map link appears twice on the page (thumbnail + title), keep unique ids in order
+    element_ids_grep_output=$(curl --silent "${_BASE_URL}&p=${page}" | grep -oE 'filedetails/\?id=[0-9]+' | grep -oE "[0-9]+" | awk '!seen[$0]++')
 
     # process each line and append to the array
     while IFS= read -r line; do
