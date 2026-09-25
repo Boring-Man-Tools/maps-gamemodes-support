@@ -2,5 +2,8 @@
   "dependencies": {
     "steamcmd-interface": "^4.0.2"
   },
-  "type": "module"
+  "type": "module",
+  "resolutions": {
+    "nan": "^2.29.0"
+  }
 }
