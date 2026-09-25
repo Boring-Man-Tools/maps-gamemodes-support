@@ -134,6 +134,8 @@ function generateHTML(gamemodes) {
 //////////////// Main code //////////////////////
 
 const folderName = process.argv[2];
+// optional, number of maps found on the workshop, to detect a run where most maps failed
+const expectedNbMaps = Number(process.argv[3] ?? 0);
 
 const files = fs.readdirSync(folderName);
 /**
@@ -159,6 +161,19 @@ files.forEach((file) => {
     }
   }
 });
+
+if (allMaps.length === 0) {
+  console.error("ERROR: no map results found, index.html not generated");
+  process.exit(1);
+}
+
+// don't replace the published page if too many maps failed to download or parse
+if (allMaps.length < expectedNbMaps * 0.9) {
+  console.error(
+    `ERROR: only ${allMaps.length}/${expectedNbMaps} map results found, index.html not generated`
+  );
+  process.exit(1);
+}
 
 const html = generateHTML(allMaps);
 fs.writeFileSync("html/index.html", html);

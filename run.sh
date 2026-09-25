@@ -1,7 +1,8 @@
 #!/bin/bash
+set -euo pipefail
 
 # Possibility to skip gen map ids with "./run.sh skip_gen"
-skip="$1"
+skip="${1:-}"
 
 # Handle the whole workflow
 ## 1. Retrieve all map ids
@@ -16,7 +17,7 @@ skip="$1"
 if [ "$skip" != "skip_gen" ]; then
     # 1. Retrieve all map ids
     echo "1. Generating map ids..."
-    ./generate_map_ids.sh
+    ./generate_map_ids.sh || exit 1
 fi
 
 # 2. Loop through all map ids
@@ -47,16 +48,18 @@ for ((map_ids_index = 0; map_ids_index < MAP_IDS_LENGTH; map_ids_index += 10)); 
 
     # c. Remove the 10 map files from the disk
     echo "c. Removing 10 map files..."
-    rm -r "node_modules/steamcmd-interface/temp/steamcmd_bin/linux/linux32/steamapps/content/app_346120/"
+    # -f as the folder is missing if the whole batch failed to download
+    rm -rf "node_modules/steamcmd-interface/temp/steamcmd_bin/linux/linux32/steamapps/content/app_346120/"
 done
 
 # 3. Generate supported gamemodes for all maps in HTML
 echo "3. Generating HTML summary from the JSON files..."
-node map-stats/summary.js "generated_results/"
+node map-stats/summary.js "generated_results/" "$MAP_IDS_LENGTH"
 
 # 4. Remove the generated files from the disk
 echo "4. Removing generated files..."
-rm -r "generated_results"
-rm -r "generated_maps_debug"
-rm -r "generated_ids.js"
-rm -r "generated_nb_maps.txt"
+rm -r "generated_results/"
+# -f as the folder exists only when debugging. Would proc an error in CI otherwise.
+rm -rf "generated_maps_debug/"
+rm "generated_ids.js"
+rm "generated_nb_maps.txt"

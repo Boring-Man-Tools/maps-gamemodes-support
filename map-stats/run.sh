@@ -21,6 +21,8 @@ for dir in $(find "$root_directory" -type d); do
   # Check if any matching files were found
   if [ -n "$matching_files" ]; then
     last_folder=$(basename "$dir")
-    node map-stats/supported_gamemodes.js "$matching_files" > "generated_results/${last_folder}.json"
+    # a single broken map shouldn't stop the whole run, summary.js checks how many maps succeeded
+    node map-stats/supported_gamemodes.js "$matching_files" > "generated_results/${last_folder}.json" \
+      || echo "WARNING: couldn't read map ${last_folder}"
   fi
 done
