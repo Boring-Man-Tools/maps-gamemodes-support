@@ -2,6 +2,7 @@ name: Generate gamemode stats for all the boring maps on the Steam workshop each
 on:
   schedule:
     - cron: "0 0 12 * *"
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
